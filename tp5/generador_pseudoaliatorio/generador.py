@@ -72,7 +72,7 @@ class Generador():
         return v
 
     def exponencial_next(self, lam=0, media=0) -> float:
-        return self.truncate((-1 / lam) * math.log(1 - self.rnd()))
+        return self.truncate((-media) * math.log(1 - self.rnd()))
 
     # "lam" es la variable lambda y "u la media"
     def exponencial(self, lam=0, media=0, n=1) -> float or list[float]:
