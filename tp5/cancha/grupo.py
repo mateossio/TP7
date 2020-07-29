@@ -21,10 +21,6 @@ class Grupo:
         pass
 
     @property
-    def proxima_llegada(self):
-        pass
-
-    @property
     def estado(self):
         if self.cola:
             return "Esperando Cancha"
@@ -39,7 +35,6 @@ class Grupo:
             'estado':self.estado,
             'fin_ocupacion':self.fin_ocupacion,
             'tiempo_ocupacion': self.tiempo_ocupacion,
-            'proxima_llegada': self.proxima_llegada,
         }
 
     @classmethod
@@ -47,9 +42,8 @@ class Grupo:
         cls.nro = 0
 
 class GrupoFutbol(Grupo):
-    def __init__(self, media, desviacion, media_llegada):
+    def __init__(self, media, desviacion):
         super(GrupoFutbol, self).__init__()
-        self.media_llegada = media_llegada
         self.media = media
         self.desviacion = desviacion
         self.numero=GrupoFutbol.get_nro()
@@ -67,16 +61,9 @@ class GrupoFutbol(Grupo):
     def tiempo_ocupacion(self):
         return self.generador_ocupacion.box_muller_next(media=self.media, desviacion=self.desviacion)
 
-    @property
-    def proxima_llegada(self):
-        return self.generador_llegada.exponencial_next(media=self.media_llegada)
-
-
 class GrupoHandball(Grupo):
-    def __init__(self, media, desviacion, media_llegada, desviacion_llegada):
+    def __init__(self, media, desviacion):
         super(GrupoHandball, self).__init__()
-        self.desviacion_llegada = desviacion_llegada
-        self.media_llegada = media_llegada
         self.media = media
         self.desviacion = desviacion
         self.numero=GrupoHandball.get_nro()
@@ -93,15 +80,9 @@ class GrupoHandball(Grupo):
     def tiempo_ocupacion(self):
         return self.generador_ocupacion.box_muller_next(media=self.media, desviacion=self.desviacion)
 
-    @property
-    def proxima_llegada(self):
-        return self.generador_llegada.box_muller_next(media=self.media_llegada, desviacion=self.desviacion_llegada)
-
 class GrupoBasquet(Grupo):
-    def __init__(self, media, desviacion, media_llegada, desviacion_llegada):
+    def __init__(self, media, desviacion):
         super(GrupoBasquet, self).__init__()
-        self.desviacion_llegada = desviacion_llegada
-        self.media_llegada = media_llegada
         self.media = media
         self.desviacion = desviacion
         self.numero=GrupoBasquet.get_nro()
@@ -118,16 +99,12 @@ class GrupoBasquet(Grupo):
     def tiempo_ocupacion(self):
         return self.generador_ocupacion.box_muller_next(media=self.media, desviacion=self.desviacion)
 
-    @property
-    def proxima_llegada(self):
-        return self.generador_llegada.box_muller_next(media=self.media_llegada, desviacion=self.desviacion_llegada)
-
 if __name__ == '__main__':
     #futbol = GrupoFutbol(1.30, 0.167, 10)
-    handball = GrupoHandball(1.33, 0.33, 12, 2)
-    basquet = GrupoBasquet(1.67, 0.5, 8, 2)
+    handball = GrupoHandball(1.33, 0.33)
+    basquet = GrupoBasquet(1.67, 0.5)
     for i in range(20):
-        futbol = GrupoFutbol(1.30, 0.167, 10)
+        futbol = GrupoFutbol(1.30, 0.167)
         print(futbol.as_dict())
     #print(handball.as_dict())
     #print(basquet.as_dict())

@@ -12,11 +12,11 @@ class Cancha:
         self.acondicionando = False
 
     def __str__(self):
-        return str(self.as_dict())
+        return str(self.as_dict()) + '\n'
 
     @property
     def estado(self):
-        grupo = self.en_cancha
+        grupo = self.grupo_actual
         if self.acondicionando:
             return "Siendo Acondicionada"
         elif len(self.en_cancha)==0:
@@ -34,10 +34,13 @@ class Cancha:
         return{
             'nombre': "Cancha",
             'estado': self.estado,
+            'Cola 1': self.en_cola_FutbolHandball,
+            'Cola 2': self.en_colaBasquet,
         }
 
     def asignar_grupo(self, grupo):
         self.grupo_actual = grupo
+        self.en_cancha.append(grupo)
 
     def agregar_cola(self, grupo):
         if grupo.tipo == "Basquet":
@@ -46,15 +49,26 @@ class Cancha:
             self.en_cola_FutbolHandball.append(grupo)
 
     def agregar_grupo(self, grupo):
-        if self.estado == "Libre":
+        estado = self.estado
+        if estado == "Libre":
             self.asignar_grupo(grupo)
-        elif self.estado == "Ocupada":
+        elif estado == "Ocupada":
             self.agregar_cola(grupo)
-        elif self.estado == "Semi Ocupada":
+        elif estado == "Semi Ocupada":
             self.en_cancha.append(grupo)
 
 if __name__ == '__main__':
     cancha = Cancha()
     futbol = GrupoFutbol(1.30, 0.167, 10)
-    print(futbol)
+    handball = GrupoHandball(1.33, 0.33, 12, 2)
+    basquet = GrupoBasquet(1.67, 0.5, 8, 2)
+    basquet2 = GrupoBasquet(1.67, 0.5, 8, 2)
+    cancha.agregar_grupo(basquet)
+    cancha.agregar_grupo(basquet2)
+    cancha.agregar_grupo(handball)
+    cancha.agregar_grupo(futbol)
     print(cancha)
+    print(basquet)
+    print(basquet2)
+    print(futbol)
+    print(handball)
