@@ -19,7 +19,7 @@ class Cancha:
     def estado(self):
         grupo = self.grupo_actual
         if self.acondicionando:
-            return "Acondicionado"
+            return "Acondicionando"
         elif len(self.en_cancha)==0:
             return "Libre"
         else:
@@ -35,8 +35,9 @@ class Cancha:
         return{
             'nombre': "Cancha",
             'estado': self.estado,
-            'Cola 1': self.en_cola_FutbolHandball,
-            'Cola 2': self.en_colaBasquet,
+            'en cancha': {grupo.nombre for grupo in self.en_cancha},
+            'Cola 1': {grupo.nombre for grupo in self.en_cola_FutbolHandball},
+            'Cola 2': {grupo.nombre for grupo in self.en_colaBasquet},
         }
 
     def asignar_grupo(self, grupo):
@@ -56,17 +57,29 @@ class Cancha:
             self.tiempo_acondicionado = self.acondicionar(grupo)
             self.asignar_grupo(grupo)
         elif estado == "Ocupada":
-            self.agregar_cola(grupo)
+            if self.grupo_actual == grupo:
+                self.finalizar_grupo(grupo)
+            else:
+                self.agregar_cola(grupo)
+                grupo.cola = True
         elif estado == "Semi Ocupada":
             #self.en_cancha.append(grupo)
-            self.asignar_grupo(grupo)
+            if grupo.tipo == "Basquet":
+                self.asignar_grupo(grupo)
+                grupo.fin_ocupacion = round(grupo.tiempo_ocupacion + reloj, 4)
+            else:
+                self.agregar_cola(grupo)
+                grupo.cola = True
         elif estado == "Acondicionando":
             if self.grupo_actual == grupo:
                 grupo.fin_ocupacion = round(grupo.tiempo_ocupacion + reloj, 4)
                 self.acondicionando = False
+                grupo.acondicionando = False
             else:
                 self.agregar_cola(grupo)
-
+                grupo.cola = True
+        else:
+            raise Exception("Error de estado de Cancha")
 
     def acondicionar(self, grupo):
         self.acondicionando = True
@@ -74,20 +87,17 @@ class Cancha:
         #Calculo tiempo de acondicionado a mano
         if grupo.tipo == "Futbol":
             m_tipo_cancha = 60
-            tiempo_acondicionamiento = 0.13
         elif grupo.tipo == "Handball":
             m_tipo_cancha = 90
-            tiempo_acondicionamiento = 0.09
         elif grupo.tipo == "Basquet":
             m_tipo_cancha = 40
-            tiempo_acondicionamiento = 0.18
         else:
             raise Exception("Erro tipo grupo")
+        tiempo_acondicionamiento = self.calcular_acondicionamiento(m_tipo_cancha)
         return tiempo_acondicionamiento
-        # tiempo_acondicionamiento = self.calcular_acondicionamiento(m_tipo_cancha)
 
     #Para calcular ec dif
-    """def calcular_acondicionamiento(self, m_tipo_cancha):
+    def calcular_acondicionamiento(self, m_tipo_cancha):
         h = 0.1
         t = 0
         wo = 25
@@ -97,15 +107,26 @@ class Cancha:
             t = t + h
             w = wo + dw*h
             wo = w
-        return round((t*4)/60, 4)
-    """
+        return round((t*4)/60, 2)
 
-if __name__ == '__main__':
+    def finalizar_grupo(self,grupo):
+        grupo.finalizado = True
+        self.en_cancha.remove(grupo)
+        self.elegir_proximo_grupo(grupo)
+
+    def elegir_proximo_grupo(self, grupo):
+        if len(self.en_cola_FutbolHandball) > 0:
+            self.asignar_grupo(self.en_cola_FutbolHandball[0])
+        else:
+            self.asignar_grupo(grupo)
+
+"""if __name__ == '__main__':
     cancha = Cancha()
     futbol = GrupoFutbol(1.30, 0.167)
     handball = GrupoHandball(1.33, 0.33)
     basquet = GrupoBasquet(1.67, 0.5)
     basquet2 = GrupoBasquet(1.67, 0.5)
+    cancha.agregar_grupo(basquet, 1.3)
     cancha.agregar_grupo(basquet, 1.3)
     cancha.agregar_grupo(basquet2, 2.5)
     cancha.agregar_grupo(handball, 5.5)
@@ -114,4 +135,4 @@ if __name__ == '__main__':
     print(basquet)
     print(basquet2)
     print(futbol)
-    print(handball)
+    print(handball)"""

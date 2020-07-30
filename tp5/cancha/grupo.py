@@ -13,6 +13,7 @@ class Grupo:
         self.fin_ocupacion = 0
         self.cancha = None
         self.tipo = ""
+        self.finalizado = False
 
     def __str__(self):
         return str(self.as_dict()) + '\n'
@@ -25,7 +26,7 @@ class Grupo:
     def estado(self):
         if self.cola:
             return "Esperando Cancha"
-        elif self.cancha.acondicionando:
+        elif self.cancha.acondicionando and self.acondicionando:
             return "Esperando Acondicionamiento"
         else:
             return "Jugando en cancha"
@@ -100,7 +101,7 @@ class GrupoBasquet(Grupo):
     def tiempo_ocupacion(self):
         return self.generador_ocupacion.box_muller_next(media=self.media, desviacion=self.desviacion)
 
-if __name__ == '__main__':
+"""if __name__ == '__main__':
     #futbol = GrupoFutbol(1.30, 0.167, 10)
     handball = GrupoHandball(1.33, 0.33)
     basquet = GrupoBasquet(1.67, 0.5)
@@ -108,4 +109,4 @@ if __name__ == '__main__':
         futbol = GrupoFutbol(1.30, 0.167)
         print(futbol.as_dict())
     #print(handball.as_dict())
-    #print(basquet.as_dict())
+    #print(basquet.as_dict())"""
