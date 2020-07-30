@@ -65,8 +65,11 @@ class Cancha:
         elif estado == "Semi Ocupada":
             #self.en_cancha.append(grupo)
             if grupo.tipo == "Basquet":
-                self.asignar_grupo(grupo)
-                grupo.fin_ocupacion = round(grupo.tiempo_ocupacion + reloj, 4)
+                if self.grupo_actual == grupo:
+                    self.finalizar_grupo(grupo)
+                else:
+                    self.asignar_grupo(grupo)
+                    grupo.fin_ocupacion = round(grupo.tiempo_ocupacion + reloj, 4)
             else:
                 self.agregar_cola(grupo)
                 grupo.cola = True
@@ -117,8 +120,10 @@ class Cancha:
     def elegir_proximo_grupo(self, grupo):
         if len(self.en_cola_FutbolHandball) > 0:
             self.asignar_grupo(self.en_cola_FutbolHandball[0])
+        elif len(self.en_colaBasquet) > 0:
+            self.asignar_grupo(self.en_colaBasquet[0])
         else:
-            self.asignar_grupo(grupo)
+            self.grupo_actual = None
 
 """if __name__ == '__main__':
     cancha = Cancha()

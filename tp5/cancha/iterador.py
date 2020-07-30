@@ -72,7 +72,8 @@ class Iteracion:
 
     def show_evento(self):
         if self.evento == "fin_ocupacion" or self.evento == "llegada":
-            return self.evento + '_' + str(self.grupo_actual.nombre)
+            if self.grupo_actual:
+                return self.evento + '_' + str(self.grupo_actual.nombre)
         return self.evento
 
     # Devuelve un diccionario con los valores actuales del objeto
@@ -124,11 +125,11 @@ class Iteracion:
     def set_proxima_llegada(self):
         self.proxima_llegada = min(self.proxima_llegada_futbol, self.proxima_llegada_handball, self.proxima_llegada_basquet)
 
-    def add_proxima_llegada(self):
-        if self.grupo_actual.tipo == "Futbol":
+    def add_proxima_llegada(self, grupo_proximo):
+        if grupo_proximo.tipo == "Futbol":
             self.grupo_actual_futbol = GrupoFutbol(media=self.medias_ocupacion[0],desviacion=self.desviaciones_ocupacion[0])
             self.proxima_llegada_futbol = round(self.reloj + self.generadorFutbol.box_muller_next(media=self.medias_llegada[0]), 4)
-        elif self.grupo_actual.tipo == "Handball":
+        elif grupo_proximo.tipo == "Handball":
             self.grupo_actual_handball = GrupoHandball(media=self.medias_ocupacion[1],desviacion=self.desviaciones_ocupacion[1])
             self.proxima_llegada_handball = round(self.reloj + self.generadorHandball.box_muller_next(media=self.medias_llegada[1],desviacion=self.desviaciones_llegada[1]), 4)
         else:
@@ -149,9 +150,10 @@ class Iteracion:
         grupo_proximo = self.grupo_actual
         if grupo_proximo:
             if self.cancha.acondicionando:
+                self.acondicionando = False
                 self.evento = "fin_acondicionamiento"
                 self.reloj = round( self.reloj + self.cancha.tiempo_acondicionado, 4)
-            elif self.proxima_llegada < grupo_proximo.fin_ocupacion:
+            elif self.proxima_llegada < grupo_proximo.fin_ocupacion or self.grupo_actual.finalizado:
                 self.evento = "llegada"
                 self.reloj = self.proxima_llegada
             else:
@@ -165,22 +167,31 @@ class Iteracion:
     #Diferenciar entre llegada de 3 grupos
     def llegada(self):
         if self.proxima_llegada_futbol == self.proxima_llegada:
-            self.grupo_actual = self.grupo_actual_futbol
+            grupo_proximo = self.grupo_actual_futbol
         elif self.proxima_llegada_handball == self.proxima_llegada:
-            self.grupo_actual = self.grupo_actual_handball
+            grupo_proximo = self.grupo_actual_handball
         else:
-            self.grupo_actual = self.grupo_actual_basquet
-        self.cancha.agregar_grupo(self.grupo_actual, self.reloj)
-        self.acondicionando = True
-        self.add_proxima_llegada()
+            grupo_proximo = self.grupo_actual_basquet
+        if not self.grupo_actual:
+            self.grupo_actual = grupo_proximo
+        self.cancha.agregar_grupo(grupo_proximo, self.reloj)
+        self.acondicionando = self.cancha.acondicionando
+        self.add_proxima_llegada(grupo_proximo)
         self.guardar_iteracion()
 
     def fin_acondicionamiento(self):
         self.cancha.agregar_grupo(self.grupo_actual, self.reloj)
         self.reloj = self.grupo_actual.fin_ocupacion
+        self.guardar_iteracion()
 
     def fin_ocupacion(self):
         self.cancha.agregar_grupo(self.grupo_actual, self.reloj)
+        self.grupo_actual = None
+        if len(self.cancha.en_cancha) > 0 :
+            self.reloj = self.cancha.en_cancha[0].fin_ocupacion
+        else:
+            self.reloj = self.proxima_llegada
+        self.guardar_iteracion()
 
     def calcular_iteracion(self, tiempo):
         while True:
@@ -197,7 +208,7 @@ class Iteracion:
                 self.fin_acondicionamiento()
             else:
                 raise Exception("Evento inexistente")
-            self.print_tabla(self.tabla)
+            #self.print_tabla(self.tabla)
 
 if __name__ == '__main__':
     it = Iteracion()
@@ -205,6 +216,4 @@ if __name__ == '__main__':
     print(it)
     it.reloj = it.proxima_llegada
     it.calcular_iteracion(20)
-    it.print_tabla(it.tabla)@classmethod
-    def resetear_lote(cls):
-        cls.nro = 0
+    print(it)
