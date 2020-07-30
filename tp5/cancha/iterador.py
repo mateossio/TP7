@@ -28,6 +28,7 @@ class Iteracion:
         self.ultimas_filas = ultimas_filas
 
         self.cancha = Cancha()
+        self.acondicionando = False
 
         #En_todo momento van a haber 3 grupos concurrentes cada uno con su tiempo de ocupacion
         self.grupo_actual = None
@@ -36,15 +37,15 @@ class Iteracion:
         self.grupo_actual_basquet = GrupoBasquet(media=self.medias_ocupacion[2], desviacion=self.desviaciones_ocupacion[2])
 
         #Determino las primeras llegadas de cada grupo
-        futbol = self.generadorFutbol.exponencial_next(media=self.medias_llegada[0])
-        handball = self.generadorHandball.box_muller_next(media=self.medias_llegada[1], desviacion=self.desviaciones_llegada[1])
-        basquet = self.generadorHandball.box_muller_next(media=self.medias_llegada[2], desviacion=self.desviaciones_llegada[2])
-        #Las meto en un array y lo ordeno cada vez que se modifica un valor
+        self.proxima_llegada_futbol = self.generadorFutbol.exponencial_next(media=self.medias_llegada[0])
+        self.proxima_llegada_handball = self.generadorHandball.box_muller_next(media=self.medias_llegada[1], desviacion=self.desviaciones_llegada[1])
+        self.proxima_llegada_basquet = self.generadorHandball.box_muller_next(media=self.medias_llegada[2], desviacion=self.desviaciones_llegada[2])
+        """"#Las meto en un array y lo ordeno cada vez que se modifica un valor
         self.proximas_llegadas = []
-        self.proximas_llegadas.append(futbol)
-        self.proximas_llegadas.append(handball)
-        self.proximas_llegadas.append(basquet)
-        self.ordenar_llegadas()
+        self.proximas_llegadas.append(self.proxima_llegada_futbol)
+        self.proximas_llegadas.append(self.proxima_llegada_handball)
+        self.proximas_llegadas.append(self.proxima_llegada_basquet)
+        self.ordenar_llegadas()"""
         #Determino cual es la prox llegada
         self.set_proxima_llegada()
 
@@ -83,6 +84,7 @@ class Iteracion:
             'evento': self.show_evento(),
             'reloj': round(self.reloj, self.decimales),
             'proxima_llegada': self.proxima_llegada,
+            'prox llegadas': {llegada for llegada in self.proximas_llegadas},
             #Cancha
             'cancha': self.cancha.as_dict(),
             'grupos': {grupo.numero : grupo.as_dict() for grupo in self.get_grupos()}
@@ -118,26 +120,34 @@ class Iteracion:
         self.tabla_final = self.tabla_final[self.pos_ultimo_elemento:] + self.tabla_final[:self.pos_ultimo_elemento]
 
     def set_proxima_llegada(self):
-        self.proxima_llegada = round(self.reloj + self.ordenar_llegadas(), self.decimales)
+        self.proxima_llegada = round(self.reloj + min(self.proxima_llegada_futbol, self.proxima_llegada_handball, self.proxima_llegada_basquet), self.decimales)
         return self.proxima_llegada
 
-    #Ordenar array de llegadas para ver cual es la siguiente
+    def add_proxima_llegada(self):
+        if self.grupo_actual.tipo == "Futbol":
+            self.grupo_actual_futbol = GrupoFutbol(media=self.medias_ocupacion[0],desviacion=self.desviaciones_ocupacion[0])
+        elif self.grupo_actual.tipo == "Handball":
+            self.grupo_actual_handball = GrupoHandball(media=self.medias_ocupacion[1],desviacion=self.desviaciones_ocupacion[1])
+        else:
+            self.grupo_actual_basquet = GrupoBasquet(media=self.medias_ocupacion[2],desviacion=self.desviaciones_ocupacion[2])
+        self.set_proxima_llegada()
+
+    """"#Ordenar array de llegadas para ver cual es la siguiente
     def ordenar_llegadas(self):
         proxima_llegada = self.proximas_llegadas[0]
         for llegada in self.proximas_llegadas[1:3]:
             if llegada < proxima_llegada:
                 proxima_llegada = llegada
         return proxima_llegada
-
+"""
     #Determina cual es el siguiente evento (falta acondicionamiento)
     def proximo_evento(self):
         grupo_proximo = self.grupo_actual
         if grupo_proximo:
-            """if self.evento == "fin_ocupacion":
+            if self.cancha.acondicionando:
                 self.evento = "fin_acondicionamiento"
-                tiempo_acondicionamiento = self.get_tiempo_acondicionamiento(grupo_proximo)
-                self.reloj += tiempo_acondicionamiento"""
-            if self.proxima_llegada < grupo_proximo.fin_ocupacion:
+                self.reloj += self.cancha.tiempo_acondicionado
+            elif self.proxima_llegada < grupo_proximo.fin_ocupacion:
                 self.evento = "llegada"
                 self.reloj = self.proxima_llegada
             else:
@@ -149,9 +159,21 @@ class Iteracion:
             self.reloj = self.proxima_llegada
 
     #Diferenciar entre llegada de 3 grupos
-    """def llegada(self):
-        self.grupo_actual = Grupo
-"""
+    def llegada(self):
+        if self.proxima_llegada_futbol == self.proxima_llegada:
+            self.grupo_actual = GrupoFutbol(media=self.medias_ocupacion[0], desviacion=self.desviaciones_ocupacion[0])
+        elif self.proxima_llegada_handball == self.proxima_llegada:
+            self.grupo_actual = GrupoHandball(media=self.medias_ocupacion[1], desviacion=self.desviaciones_ocupacion[1])
+        else:
+            self.grupo_actual = GrupoBasquet(media=self.medias_ocupacion[2], desviacion=self.desviaciones_ocupacion[2])
+        tiempo_acondicionamiento = self.cancha.agregar_grupo(self.grupo_actual, self.reloj)
+        self.acondicionando = True
+        self.add_proxima_llegada()
+        self.guardar_iteracion()
+
+    def fin_acondicionamiento(self):
+        self.cancha.agregar_grupo(self.grupo_actual, self.reloj)
+
     def calcular_iteracion(self, tiempo):
         while True:
             self.numero += 1
@@ -169,6 +191,7 @@ class Iteracion:
 
 if __name__ == '__main__':
     it = Iteracion()
-    it.reloj = it.proxima_llegada
-
     print(it)
+    it.reloj = it.proxima_llegada
+    it.calcular_iteracion(20)
+    it.print_tabla(it.tabla)

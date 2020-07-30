@@ -9,6 +9,7 @@ class Grupo:
         self.generador_ocupacion = Generador(decimals=4, random=True)
         self.generador_llegada = Generador(decimals=4, random=True)
         self.cola = False
+        self.acondicionando = False
         self.fin_ocupacion = 0
         self.cancha = None
         self.tipo = ""
@@ -24,8 +25,8 @@ class Grupo:
     def estado(self):
         if self.cola:
             return "Esperando Cancha"
-        #elif self.cancha.acondicionando:
-            #return "Esperando Acondicionamiento"
+        elif self.cancha.acondicionando:
+            return "Esperando Acondicionamiento"
         else:
             return "Jugando en cancha"
 
