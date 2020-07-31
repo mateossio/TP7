@@ -1,6 +1,6 @@
 from generador_pseudoaliatorio.generador import Generador
-from grupo import GrupoFutbol,GrupoHandball,GrupoBasquet
-from cancha import Cancha
+from .grupo import GrupoFutbol,GrupoHandball,GrupoBasquet
+from .cancha import Cancha
 
 class Iteracion:
 
@@ -56,7 +56,7 @@ class Iteracion:
         dic.pop('grupos')
         cancha = self.as_dict['cancha']
         grupos = self.as_dict['grupos']
-        grupos = '\t' + '\n\t'.join([grupo for grupo in grupos])
+        grupos = '\t' + '\n\t'.join([str(grupo) for grupo in grupos])
         return f"{dic}\n{cancha}\n{grupos}\n"
 
     #Este tampoco
@@ -149,7 +149,7 @@ class Iteracion:
     def proximo_evento(self):
         grupo_proximo = self.grupo_actual
         if grupo_proximo:
-            if self.cancha.acondicionando:
+            if self.cancha.acondicionando and self.cancha.tiempo_acondicionado < self.proxima_llegada:
                 self.acondicionando = False
                 self.evento = "fin_acondicionamiento"
                 self.reloj = round( self.reloj + self.cancha.tiempo_acondicionado, 4)
@@ -175,23 +175,24 @@ class Iteracion:
         if not self.grupo_actual:
             self.grupo_actual = grupo_proximo
         self.cancha.agregar_grupo(grupo_proximo, self.reloj)
+        #self.reloj = round(self.reloj + self.cancha.tiempo_acondicionado, 4)
         self.acondicionando = self.cancha.acondicionando
         self.add_proxima_llegada(grupo_proximo)
         self.guardar_iteracion()
 
     def fin_acondicionamiento(self):
         self.cancha.agregar_grupo(self.grupo_actual, self.reloj)
-        self.reloj = self.grupo_actual.fin_ocupacion
+        #self.reloj = self.grupo_actual.fin_ocupacion
         self.guardar_iteracion()
 
     def fin_ocupacion(self):
         self.cancha.agregar_grupo(self.grupo_actual, self.reloj)
         self.grupo_actual = None
+        self.guardar_iteracion()
         if len(self.cancha.en_cancha) > 0 :
             self.reloj = self.cancha.en_cancha[0].fin_ocupacion
         else:
             self.reloj = self.proxima_llegada
-        self.guardar_iteracion()
 
     def calcular_iteracion(self, tiempo):
         while True:
@@ -216,4 +217,4 @@ if __name__ == '__main__':
     print(it)
     it.reloj = it.proxima_llegada
     it.calcular_iteracion(20)
-    print(it)
+    print(it.print_tabla(it.tabla))

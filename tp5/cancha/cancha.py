@@ -1,5 +1,5 @@
 from generador_pseudoaliatorio.generador import Generador
-from grupo import Grupo,GrupoFutbol,GrupoHandball,GrupoBasquet
+from .grupo import Grupo,GrupoFutbol,GrupoHandball,GrupoBasquet
 
 class Cancha:
 
@@ -120,8 +120,10 @@ class Cancha:
     def elegir_proximo_grupo(self, grupo):
         if len(self.en_cola_FutbolHandball) > 0:
             self.asignar_grupo(self.en_cola_FutbolHandball[0])
+            self.en_cola_FutbolHandball.remove(self.en_cola_FutbolHandball[0])
         elif len(self.en_colaBasquet) > 0:
             self.asignar_grupo(self.en_colaBasquet[0])
+            self.en_colaBasquet.remove(self.en_colaBasquet[0])
         else:
             self.grupo_actual = None
 
