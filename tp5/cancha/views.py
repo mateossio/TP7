@@ -59,6 +59,7 @@ class Colas(generic.FormView):
         context = {
             'tabla': it.tabla,
             'form': form,
+            'grupos': it.get_grupos(),
 
         }
 

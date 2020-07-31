@@ -32,24 +32,24 @@
     <tr class="h5">
         <th colspan="1" rowspan="3" class="table-info">Evento</th>
         <th colspan="1" rowspan="3" class="table-info">Reloj (minutos)</th>
-        <th colspan="7" rowspan="2" class="table-info">llegada_llamada_interna</th>
-        <th colspan="7" rowspan="2" class="table-info">llegada_llamada_externa</th>
-        <th colspan="2" rowspan="2" class="table-info">LLamada</th>
-        <th colspan="1" rowspan="3" class="table-info">Fin LLamada</th>
-        <th colspan="{{llamadas_internas|length}}" rowspan="2" class="table-info">fin_llamada_interna (i)</th>
-        <th colspan="{{llamadas_externas|length}}" rowspan="2" class="table-info">fin_llamada_externa (i)</th>
+        <th colspan="3" rowspan="2" class="table-info">llegada_futbol</th>
+        <th colspan="4" rowspan="2" class="table-info">llegada_handball</th>
+        <th colspan="4" rowspan="2" class="table-info">llegada_basquet</th>
+        <th colspan="4" rowspan="2" class="table-info">fin_futbol</th>
+        <th colspan="4" rowspan="2" class="table-info">fin_handball</th>
+        <th colspan="5" rowspan="2" class="table-info">fin_basquet</th>
+        <th colspan="3" rowspan="2" class="table-info">fin_acondicionamiento</th>>fin_llamada_externa (i)</th>
 
-        <th colspan="4" rowspan="1" class="table-info">Estadisticas</th>
-        <th colspan="10" rowspan="1" class="table-info">Internos</th>
-        <th colspan="3" rowspan="1" class="table-info">Lineas Externas</th>
+        <th colspan="3" rowspan="2" class="table-info">Cancha</th>
 
-        <th colspan="{{llamadas_internas|length}}" rowspan="1" class="table-info">Llamadas internas</th>
-        <th colspan="{{llamadas_externas|length}}" rowspan="1" class="table-info">Llamadas externas</th>
+        <th colspan="6" rowspan="1" class="table-info">Estadisticas</th>
+
+        <th colspan="{{grupos|length}}" rowspan="2" class="table-info">Grupos</th>
 
     </tr>
     <tr style="{top: 120px}">
-        <th rowspan="1" colspan="2" class="table-primary">LLamadas perdidas</th>
-        <th rowspan="1" colspan="2" class="table-primary">LLamadas totales</th>
+        <th rowspan="1" colspan="2" class="table-primary">Tiempo de espera promedio</th>
+        <th rowspan="1" colspan="2" class="table-primary">Porcentaje de ocupacion</th>
 
         {% with ''|center:10 as range %}
         {% for _ in range %}
@@ -79,22 +79,38 @@
         <th  rowspan="1" colspan="1" scope="col" class="table-primary th-3">RND</th>
         <th rowspan="1" colspan="1" scope="col" class="table-primary">tiempo llegada</th>
         <th rowspan="1" colspan="1" scope="col" class="table-primary">proxima llegada</th>
-        <th rowspan="1" colspan="1" scope="col" class="table-primary">RND</th>
-        <th rowspan="1" colspan="1" scope="col" class="table-primary">Duracion</th>
-        <th rowspan="1" colspan="1" scope="col" class="table-primary">RND</th>
-        <th rowspan="1" colspan="1" scope="col" class="table-primary">Interno de origen</th>
 
-        <th rowspan="1" colspan="1" scope="col" class="table-primary">RND</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">RND 1</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">RND 2</th>
         <th rowspan="1" colspan="1" scope="col" class="table-primary">tiempo llegada</th>
         <th rowspan="1" colspan="1" scope="col" class="table-primary">proxima llegada</th>
-        <th rowspan="1" colspan="1" scope="col" class="table-primary">RND</th>
-        <th rowspan="1" colspan="1" scope="col" class="table-primary">Duracion</th>
-        <th rowspan="1" colspan="1" scope="col" class="table-primary">RND</th>
-        <th rowspan="1" colspan="1" scope="col" class="table-primary">Linea externa</th>
 
-        <th rowspan="1" colspan="1" scope="col" class="table-primary">RND</th>
-        <th rowspan="1" colspan="1" scope="col" class="table-primary">Interno de destino</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">RND 1</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">RND 2</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">tiempo llegada</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">proxima llegada</th>
 
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">RND 1</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">RND 2</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">tiempo ocupacion</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">fin ocupacion</th>
+
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">RND 1</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">RND 2</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">tiempo ocupacion</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">fin ocupacion</th>
+
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">RND 1</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">RND 2</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">tiempo ocupacion</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">fin ocupacion (1)</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">fin ocupacion (2)</th>
+
+
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">M</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">tiempo acondicionamiento</th>
+        <th rowspan="1" colspan="1" scope="col" class="table-primary">fin acondicionamiento</th>
+    
         <!-- LLamadas internas -->
         {% for llamada in llamadas_internas %}
         <th rowspan="1" colspan="1" scope="col" class="table-primary">&nbsp&nbsp&nbsp&nbsp{{ llamada }}&nbsp&nbsp&nbsp&nbsp</th>
