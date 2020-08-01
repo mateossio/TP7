@@ -59,7 +59,11 @@ class Colas(generic.FormView):
         context = {
             'tabla': it.tabla,
             'form': form,
-            'grupos': it.get_grupos(),
+            'grupos': it.get_grupos_full(),
+            'grupos_futbol': it.get_grupos_futbol(),
+            'grupos_handball': it.get_grupos_handball(),
+            'grupos_basquet': it.get_grupos_basquet(),
+
 
         }
 

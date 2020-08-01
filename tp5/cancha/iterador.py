@@ -36,6 +36,10 @@ class Iteracion:
         self.grupo_actual_handball = GrupoHandball(media=self.medias_ocupacion[1], desviacion=self.desviaciones_ocupacion[1])
         self.grupo_actual_basquet = GrupoBasquet(media=self.medias_ocupacion[2], desviacion=self.desviaciones_ocupacion[2])
 
+        self.grupos_futbol = []
+        self.grupos_handball = []
+        self.grupos_basquet = []
+
         #Determino las primeras llegadas de cada grupo
         self.proxima_llegada_futbol = self.generadorFutbol.exponencial_next(media=self.medias_llegada[0])
         self.proxima_llegada_handball = self.generadorHandball.box_muller_next(media=self.medias_llegada[1], desviacion=self.desviaciones_llegada[1])
@@ -106,6 +110,9 @@ class Iteracion:
             # Actualizo el proximo elemnto a reemplazar cuidando de que se mantenga en el rango de las ultimas filas
             # self.pos_ultimo_elemento = (self.pos_ultimo_elemento + 1) % self.ultimas_filas
 
+    def get_grupos_full(self):
+        return self.get_grupos_futbol() + self.get_grupos_handball() + self.get_grupos_basquet()
+
     def get_grupos(self):
         return self.get_grupos_en_sala() + self.get_grupos_en_cola_futbolhandball() + self.get_grupos_en_cola_basquet()
 
@@ -118,6 +125,15 @@ class Iteracion:
     def get_grupos_en_cola_basquet(self):
         return self.cancha.en_colaBasquet
 
+    def get_grupos_futbol(self):
+        return self.grupos_futbol
+
+    def get_grupos_handball(self):
+        return self.grupos_handball
+
+    def get_grupos_basquet(self):
+        return self.grupos_basquet
+
     def ordenar_tabla_final(self):
         "Ordena la tabla final"
         self.tabla_final = self.tabla_final[self.pos_ultimo_elemento:] + self.tabla_final[:self.pos_ultimo_elemento]
@@ -128,12 +144,15 @@ class Iteracion:
     def add_proxima_llegada(self, grupo_proximo):
         if grupo_proximo.tipo == "Futbol":
             self.grupo_actual_futbol = GrupoFutbol(media=self.medias_ocupacion[0],desviacion=self.desviaciones_ocupacion[0])
+            self.grupos_futbol.append(self.grupo_actual_futbol)
             self.proxima_llegada_futbol = round(self.reloj + self.generadorFutbol.box_muller_next(media=self.medias_llegada[0]), 4)
         elif grupo_proximo.tipo == "Handball":
             self.grupo_actual_handball = GrupoHandball(media=self.medias_ocupacion[1],desviacion=self.desviaciones_ocupacion[1])
+            self.grupos_handball.append(self.grupo_actual_handball)
             self.proxima_llegada_handball = round(self.reloj + self.generadorHandball.box_muller_next(media=self.medias_llegada[1],desviacion=self.desviaciones_llegada[1]), 4)
         else:
             self.grupo_actual_basquet = GrupoBasquet(media=self.medias_ocupacion[2],desviacion=self.desviaciones_ocupacion[2])
+            self.grupos_basquet.append(self.grupo_actual_basquet)
             self.proxima_llegada_basquet = round(self.reloj + self.generadorBasquet.box_muller_next(media=self.medias_llegada[2],desviacion=self.desviaciones_llegada[2]), 4)
         self.set_proxima_llegada()
 

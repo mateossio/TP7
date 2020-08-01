@@ -24,7 +24,9 @@ class Grupo:
 
     @property
     def estado(self):
-        if self.cola:
+        if self.acondicionando:
+            return "Finalizado"
+        elif self.cola:
             return "Esperando Cancha"
         elif self.cancha.acondicionando and self.acondicionando:
             return "Esperando Acondicionamiento"
